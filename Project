@@ -1,4 +1,6 @@
 import pandas as pd
+import numpy as np
+import matplotlib as mpl
 
 def user_file_import():
     file_path = input("Enter the file path: ")
@@ -12,6 +14,7 @@ def user_file_import():
             print(Y)
     except FileNotFoundError:
         print(f"Error: File not found at {file_path}")
+        quit()
     except Exception as e:
         print(f"An error occurred: {e}")
     dataframe = pd.read_csv(file_path)
