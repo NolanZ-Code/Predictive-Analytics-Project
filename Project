@@ -27,3 +27,16 @@ def user_list_input():
         print("Input Y Value #", j, ":", end="")
         Yi = int(input())
         Y.append(Yi)
+
+print("Which way will you import the data? File Import or List Input?")
+try:
+    datatype = int(input("File import (1) or List Input (2): "))
+except:
+    print("Input not recognized")
+    quit()
+if datatype == 1:
+    user_file_import()
+elif datatype == 2:
+    user_list_input()
+else:
+    print("Invalid input")
