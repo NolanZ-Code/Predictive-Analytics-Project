@@ -1,1 +1,5 @@
+import numpy as np
 
+my_list = [1, 2, 3, 4, 5]
+mean_value = np.mean(my_list)
+print(mean_value)  # Output: 3.0
