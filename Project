@@ -10,10 +10,10 @@ while True:
             with open(file_path, 'r') as file:
                 content = file.read()
                 dataframe = pd.read_csv(file_path)
-                X = list(dataframe.X)
-                Y = list(dataframe.Y)
-                print(X)
-                print(Y)
+                Xf = list(dataframe.X)
+                Yf = list(dataframe.Y)
+                X = np.array(Xf)
+                Y = np.array(Yf)
         except FileNotFoundError:
             print(f"Error: File not found at {file_path}")
             quit()
@@ -23,17 +23,19 @@ while True:
     def user_list_input():
         global X
         global Y
-        X = []
-        Y = []
+        Xl = []
+        Yl = []
         n = int(input("How many X/Y values?: "))
         for i in range(1, n + 1):
             print("Input X Value #", i, ":", end="")
             Xi = int(input())
-            X.append(Xi)
+            Xl.append(Xi)
         for j in range(1, n + 1):
             print("Input Y Value #", j, ":", end="")
             Yi = int(input())
-            Y.append(Yi)
+            Yl.append(Yi)
+        X = np.array(Xl)
+        Y = np.array(Yl)
     def scatterplot():
         plt.scatter(X,Y)
         plt.xlabel("X-axis")
@@ -57,3 +59,4 @@ while True:
         break
     else:
         print("Invalid input")
+
