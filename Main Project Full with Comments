@@ -1,1 +1,193 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, r2_score
+from mpl_toolkits.mplot3d import Axes3D
+# These tools are used to train a regression model, split data into different sets, evaluate a model, and add a 3D graphing aspect.
+X, Y = None, None
+coefficients, intercept = None, None
 
+# Path for files to be inputted as well as read as data set
+def user_file_import():
+    global X, Y
+    file_path = input("Enter the file path: ")
+    try:
+        dataframe = pd.read_csv(file_path)
+        print("Columns found in file:", list(dataframe.columns))
+
+        xvarinput = input("Enter the X variable(s), comma-separated (e.g., col1,col2): ")
+        x_columns = [col.strip() for col in xvarinput.split(',')]  # Splitting user input into column names list
+        yvarinput = input("What is the Y variable called? ")
+        X_raw = dataframe[x_columns]
+        X = pd.get_dummies(X_raw, drop_first=True).values  # Converts categorical to numeric
+        Y = dataframe[yvarinput].values
+
+        if np.isnan(X).any() or np.isnan(Y).any():
+            print("NaN value found in either list. Breaking the loop.")
+            quit()  # Value is not a number and breaks loop
+
+    except FileNotFoundError:
+        print(f"Error: File not found at {file_path}")
+        quit()
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+def user_list_input():
+    global X, Y
+    X_rows = []
+    Y = []
+
+    m = int(input("How many X variables (columns/features)?: "))
+    n = int(input("How many data points (rows)?: "))
+
+    for i in range(1, n + 1):
+        print(f"Enter values for data point #{i}:")
+        x_row = []
+        for j in range(1, m + 1):
+            x_val = float(input(f"  X{j}: "))
+            x_row.append(x_val)
+        X_rows.append(x_row)
+
+        y_val = float(input("  Y: "))
+        Y.append(y_val)
+
+    X = np.array(X_rows)
+    Y = np.array(Y)
+
+def scatterplot():
+    try:
+        plt.scatter(X, Y)
+        plt.xlabel("X-axis")
+        plt.ylabel("Y-axis")
+        plt.title("Scatter Plot")
+        plt.show()
+    except:
+        print("There was an error, most likely have too many x variables.")
+
+def multiple_linear_regression_predict(X, Y):
+    if X.ndim == 1:
+        X = X.reshape(-1, 1)
+
+    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.5, random_state=42)
+    model = LinearRegression()
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+
+    mse = mean_squared_error(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
+    print(f"Mean Squared Error: {mse}")
+    print(f"R-squared: {r2}")
+
+    if X.shape[1] > 1:
+        for i, coef in enumerate(model.coef_):
+            print(f"Coefficient for feature {i + 1}: {coef}")
+    else:
+        print(f"Coefficient: {model.coef_[0]}")
+    print(f"Intercept: {model.intercept_}")
+
+    if X.shape[1] == 1:
+        simple_lin_reg_plot(X_test, y_test, y_pred, model)
+    elif X.shape[1] == 2:
+        multiple_lin_reg_plot3d(X, Y, model)
+    else:
+        multiple_lin_reg_plot(y_test, y_pred)
+
+    return model.coef_, model.intercept_
+
+def simple_lin_reg_plot(X_test, y_test, y_pred, model):
+    sorted_indices = X_test[:, 0].argsort()
+    X_sorted = X_test[sorted_indices]
+    y_sorted = y_pred[sorted_indices]
+
+    plt.scatter(X_test, y_test, label='Actual Data')
+    plt.plot(X_sorted, y_sorted, color='red', label='Regression Line')
+    plt.xlabel("X")
+    plt.ylabel("Y")
+    plt.title("Simple Linear Regression")
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+def multiple_lin_reg_plot(y_test, y_pred):
+    plt.scatter(y_test, y_pred, color='purple')
+    plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'k--', lw=2)
+    plt.xlabel("Actual Y")
+    plt.ylabel("Predicted Y")
+    plt.title("Predicted vs. Actual")
+    plt.grid(True)
+    plt.show()
+
+def multiple_lin_reg_plot3d(X, Y, model):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    x1 = X[:, 0]
+    x2 = X[:, 1]
+
+    ax.scatter(x1, x2, Y, color='blue', label='Actual Data')
+    x1_grid, x2_grid = np.meshgrid(
+        np.linspace(x1.min(), x1.max(), 20),
+        np.linspace(x2.min(), x2.max(), 20)
+    )
+
+    x_grid_flat = np.c_[x1_grid.ravel(), x2_grid.ravel()]
+    y_pred_grid = model.predict(x_grid_flat).reshape(x1_grid.shape)
+
+    ax.plot_surface(x1_grid, x2_grid, y_pred_grid, alpha=0.5, color='red')
+    ax.set_xlabel("X1")
+    ax.set_ylabel("X2")
+    ax.set_zlabel("Y")
+    ax.set_title("3D Linear Regression")
+    plt.show()
+
+def manual_prediction(coefficients, intercept):
+    if coefficients is None or intercept is None:
+        print("Model coefficients are not available. Please run linear regression first.")
+        return
+
+    m = len(coefficients)
+    print(f"Model expects {m} input feature(s).")
+
+    try:
+        input_features = []
+        for i in range(m):
+            val = float(input(f"Enter value for X{i + 1}: "))
+            input_features.append(val)
+
+        input_array = np.array(input_features)
+        prediction = np.dot(input_array, coefficients) + intercept
+        print(f"Predicted Y value: {prediction:.4f}")
+    except Exception as e:
+        print(f"Error during manual prediction: {e}")
+
+while True:
+    print("Which action would you like to complete?")
+    try:
+        datatype = int(input("""
+        File import (1), List Input (2), Scatterplot (3), 
+        Lin_Reg (4), Manual Prediction (5), Exit (6): """))
+    except:
+        print("Input not recognized")
+        continue
+
+    if datatype == 1:
+        user_file_import()
+    elif datatype == 2:
+        user_list_input()
+    elif datatype == 6:
+        print("Exiting program.")
+        quit()
+    elif datatype in [3, 4, 5]:
+        if X is None or Y is None:
+            print("No data currently loaded. Please import data first.")
+            continue
+        if datatype == 3:
+            scatterplot()
+        elif datatype == 4:
+            coefficients, intercept = multiple_linear_regression_predict(X, Y)
+        elif datatype == 5:
+            manual_prediction(coefficients, intercept)
+    else:
+        print("Invalid input")
