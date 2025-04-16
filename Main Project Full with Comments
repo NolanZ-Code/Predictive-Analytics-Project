@@ -105,6 +105,7 @@ def multiple_linear_regression_predict(X, Y):
 
     return model.coef_, model.intercept_
 
+# Start of linear regression on a 2d plane
 def simple_lin_reg_plot(X_test, y_test, y_pred, model):
     sorted_indices = X_test[:, 0].argsort()
     X_sorted = X_test[sorted_indices]
