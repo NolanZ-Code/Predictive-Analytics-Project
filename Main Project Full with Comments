@@ -69,6 +69,8 @@ def user_list_input():
     # Creating a numpy for Y values
     Y = np.array(Y)
 
+# Basic MatPlotLib Scatterplot, with exception to prevent
+# too many x variables due to 2-dimensional restrictions.
 def scatterplot():
     try:
         plt.scatter(X, Y)
@@ -79,7 +81,10 @@ def scatterplot():
     except:
         print("There was an error, most likely have too many x variables.")
 
+# Function takes in X and Y variables files or list above
 def multiple_linear_regression_predict(X, Y):
+# If X is a 1d array, this reshapes it into a 2d array with one column
+# because that is the format in which SciKit expects the data
     if X.ndim == 1:
         X = X.reshape(-1, 1)
 
