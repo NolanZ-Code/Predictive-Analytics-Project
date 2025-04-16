@@ -10,19 +10,24 @@ from mpl_toolkits.mplot3d import Axes3D
 X, Y = None, None
 coefficients, intercept = None, None
 
-# Path for files to be inputted as well as read as data set
+# Path for files to be imported by user as well as read as data set
 def user_file_import():
     global X, Y
     file_path = input("Enter the file path: ")
     try:
         dataframe = pd.read_csv(file_path)
+        # Allowing user to include data sets with multiple x variables
         print("Columns found in file:", list(dataframe.columns))
-
         xvarinput = input("Enter the X variable(s), comma-separated (e.g., col1,col2): ")
-        x_columns = [col.strip() for col in xvarinput.split(',')]  # Splitting user input into column names list
+        # Splitting user input from above, into multiple x variable columns
+        x_columns = [col.strip() for col in xvarinput.split(',')]
+        # Allowing user to specify Y variable
         yvarinput = input("What is the Y variable called? ")
+        # Converts categorical variables into numeric values using pandas
         X_raw = dataframe[x_columns]
-        X = pd.get_dummies(X_raw, drop_first=True).values  # Converts categorical to numeric
+        #Drop first true, in order to keep categorical variables independent. The dropped
+        #variable is the baseline in which the other categorical variables are compared to.
+        X = pd.get_dummies(X_raw, drop_first=True).values
         Y = dataframe[yvarinput].values
 
         if np.isnan(X).any() or np.isnan(Y).any():
