@@ -122,18 +122,19 @@ def multiple_linear_regression_predict(X, Y):
     elif X.shape[1] == 2:
         multiple_lin_reg_plot3d(X, Y, model)
     # If there is 3 or more X variables, plotting on a 3d graph is somewhat impractical
-    # as interpreting each X variable individually would become difficult so this plots 
+    # as interpreting each X variable individually would become difficult so this plots
     # predicted vs actual data which shows a visual representation on how well the model performs
     else:
         multiple_lin_reg_plot(y_test, y_pred)
-
+    # Returns model coefficient variables and the model intercept variable for manual predictions
     return model.coef_, model.intercept_
 
 def simple_lin_reg_plot(X_test, y_test, y_pred, model):
+    # Sorts data for a linear regression line
     sorted_indices = X_test[:, 0].argsort()
     X_sorted = X_test[sorted_indices]
     y_sorted = y_pred[sorted_indices]
-
+    # Plots X vs Y variables with a red regression line
     plt.scatter(X_test, y_test, label='Actual Data')
     plt.plot(X_sorted, y_sorted, color='red', label='Regression Line')
     plt.xlabel("X")
@@ -144,6 +145,8 @@ def simple_lin_reg_plot(X_test, y_test, y_pred, model):
     plt.show()
 
 def multiple_lin_reg_plot(y_test, y_pred):
+    # Plots Y test (Actual) vs Y prediction (Predicted)
+    # as purple, which shows how well the model performed .
     plt.scatter(y_test, y_pred, color='purple')
     plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'k--', lw=2)
     plt.xlabel("Actual Y")
@@ -153,13 +156,16 @@ def multiple_lin_reg_plot(y_test, y_pred):
     plt.show()
 
 def multiple_lin_reg_plot3d(X, Y, model):
+    # Creates 3d plotting environment
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-
+    # Sets X1 variable and X2 variable as 1st and 2nd column for plotting
     x1 = X[:, 0]
     x2 = X[:, 1]
-
+    # plots X1 Vs X2 vs Y
     ax.scatter(x1, x2, Y, color='blue', label='Actual Data')
+    # Creates a "surface" so that every possible combination of x1 and x2 is
+    # covered for corresponding Y predictions
     x1_grid, x2_grid = np.meshgrid(
         np.linspace(x1.min(), x1.max(), 20),
         np.linspace(x2.min(), x2.max(), 20)
