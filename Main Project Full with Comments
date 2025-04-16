@@ -170,7 +170,9 @@ def multiple_lin_reg_plot3d(X, Y, model):
         np.linspace(x1.min(), x1.max(), 20),
         np.linspace(x2.min(), x2.max(), 20)
     )
-
+    # Flattens X1 and X2 (currently 2d) into 1d arrays that are paired up column-wise
+    # in order to predict Y variables, then reshapes the 1d array of Y variables into
+    # a 2d plane.
     x_grid_flat = np.c_[x1_grid.ravel(), x2_grid.ravel()]
     y_pred_grid = model.predict(x_grid_flat).reshape(x1_grid.shape)
 
