@@ -7,6 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 from mpl_toolkits.mplot3d import Axes3D
 #The global variables that will be used for later
+
 X, Y = None, None
 coefficients, intercept = None, None
 
@@ -16,26 +17,34 @@ def user_file_import():
     file_path = input("Enter the file path: ")
     try:
         dataframe = pd.read_csv(file_path)
-        # Allowing user to include data sets with multiple x variables
+        
+# Allowing user to include data sets with multiple x variables
         print("Columns found in file:", list(dataframe.columns))
         xvarinput = input("Enter the X variable(s), comma-separated (e.g., col1,col2): ")
-        # Splitting user input from above, into multiple x variable columns
+        
+# Splitting user input from above, into multiple x variable columns
         x_columns = [col.strip() for col in xvarinput.split(',')]
-        # Allowing user to specify Y variable
+        
+# Allowing user to specify Y variable
         yvarinput = input("What is the Y variable called? ")
-        # Converts categorical variables into numeric values using pandas
+        
+# Converts categorical variables into numeric values using pandas
         X_raw = dataframe[x_columns]
-        #Drop first true, in order to keep categorical variables independent. The dropped
+        
+#Drop first true, in order to keep categorical variables independent. The dropped
         #variable is the baseline in which the other categorical variables are compared to.
         X = pd.get_dummies(X_raw, drop_first=True).values
-        # Creates a list for the Y-values
+        
+# Creates a list for the Y-values
         Y = dataframe[yvarinput].values
-        # If the lists are not the same size a NaN value is created
+        
+# If the lists are not the same size a NaN value is created
         # which is picked up by this if statement, which breaks the loop.
         if np.isnan(X).any() or np.isnan(Y).any():
             print("NaN value found in either list. Breaking the loop.")
             quit()
-    # Basic exceptions for file not found and error handling.
+    
+# Basic exceptions for file not found and error handling.
     except FileNotFoundError:
         print(f"Error: File not found at {file_path}")
         quit()
@@ -44,27 +53,33 @@ def user_file_import():
 
 def user_list_input():
     global X, Y
-    # Creates a list for multiple x variables to be handled
+    
+# Creates a list for multiple x variables to be handled
     X_rows = []
     Y = []
-    # Allows user to specify how many rows (data points), and X variables that
+    
+# Allows user to specify how many rows (data points), and X variables that
     # in the data set.
     m = int(input("How many X variables (columns not including Y)?: "))
     n = int(input("How many data points (rows)?: "))
-    # For loop that allows each data point to be inputted manually
+    
+# For loop that allows each data point to be inputted manually
     for i in range(1, n + 1):
         print(f"Enter values for data point #{i}:")
         x_row = []
-        # For loop that cycles between each X variable, allowing for multiple
+        
+# For loop that cycles between each X variable, allowing for multiple
         # to be handled at once
         for j in range(1, m + 1):
             x_val = float(input(f"  X{j}: "))
             x_row.append(x_val)
         X_rows.append(x_row)
-        # Y value inputted by user
+        
+# Y value inputted by user
         y_val = float(input("  Y: "))
         Y.append(y_val)
-    # Creating a numpy array, with X columns separated
+    
+# Creating a numpy array, with X columns separated
     X = np.array(X_rows)
     # Creating a numpy for Y values
     Y = np.array(Y)
@@ -83,58 +98,72 @@ def scatterplot():
 
 # Function takes in X and Y variables files or list above
 def multiple_linear_regression_predict(X, Y):
+
 # If X is a 1d array, this reshapes it into a 2d array with one column
 # because that is the format in which SciKit expects the data
     if X.ndim == 1:
         X = X.reshape(-1, 1)
-    # Creating variables in order to train and test the data
+    
+# Creating variables in order to train and test the data
     # Test size uses 50% of data to test, 50% to train. A lower test size is
     # more accurate when predicting data however in order to show a better data
     # representation a higher test size is advisable in order to prevent data from
     # being unable to be shown on plots later on.
-    # Random state allows for reproducible results by selection a randomization split
+    
+# Random state allows for reproducible results by selection a randomization split
     X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.5, random_state=42)
-    # specifying model type for SciKit
+    
+# specifying model type for SciKit
     model = LinearRegression()
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
-    # mse is average ofthe squared distance between the predicted values and actual values
+    
+# mse is average ofthe squared distance between the predicted values and actual values
     mse = mean_squared_error(y_test, y_pred)
-    # How much variation in Y can be explained by X (the predictors) as a percentage
+    
+# How much variation in Y can be explained by X (the predictors) as a percentage
     r2 = r2_score(y_test, y_pred)
     print(f"Mean Squared Error: {mse}")
     print(f"R-squared: {r2}")
-    # If there are multiple X variables, each coefficient is printed based off
+    
+# If there are multiple X variables, each coefficient is printed based off
     # of the regression formula
     if X.shape[1] > 1:
         for i, coef in enumerate(model.coef_):
             print(f"Coefficient for feature {i + 1}: {coef}")
     else:
         print(f"Coefficient: {model.coef_[0]}")
-    # the intercept is printed, or what the predictors are unable to predict
+    
+# the intercept is printed, or what the predictors are unable to predict
     print(f"Intercept: {model.intercept_}")
-    # If there is only 1 X variable, it is sent to the simple lin reg plot
+    
+# If there is only 1 X variable, it is sent to the simple lin reg plot
     # that plots X and Y with a regression line
     if X.shape[1] == 1:
         simple_lin_reg_plot(X_test, y_test, y_pred, model)
-    # If there is 2 X variables, it is sent to the 3d multiple lin reg plot
+    
+# If there is 2 X variables, it is sent to the 3d multiple lin reg plot
     # that plots X1, X2, and Y with a regression plane
     elif X.shape[1] == 2:
         multiple_lin_reg_plot3d(X, Y, model)
-    # If there is 3 or more X variables, plotting on a 3d graph is somewhat impractical
+    
+# If there is 3 or more X variables, plotting on a 3d graph is somewhat impractical
     # as interpreting each X variable individually would become difficult so this plots
     # predicted vs actual data which shows a visual representation on how well the model performs
     else:
         multiple_lin_reg_plot(y_test, y_pred)
-    # Returns model coefficient variables and the model intercept variable for manual predictions
+    
+# Returns model coefficient variables and the model intercept variable for manual predictions
     return model.coef_, model.intercept_
 
 def simple_lin_reg_plot(X_test, y_test, y_pred, model):
-    # Sorts data for a linear regression line
+    
+# Sorts data for a linear regression line
     sorted_indices = X_test[:, 0].argsort()
     X_sorted = X_test[sorted_indices]
     y_sorted = y_pred[sorted_indices]
-    # Plots X vs Y variables with a red regression line
+    
+# Plots X vs Y variables with a red regression line
     plt.scatter(X_test, y_test, label='Actual Data')
     plt.plot(X_sorted, y_sorted, color='red', label='Regression Line')
     plt.xlabel("X")
@@ -145,7 +174,8 @@ def simple_lin_reg_plot(X_test, y_test, y_pred, model):
     plt.show()
 
 def multiple_lin_reg_plot(y_test, y_pred):
-    # Plots Y test (Actual) vs Y prediction (Predicted)
+    
+# Plots Y test (Actual) vs Y prediction (Predicted)
     # as purple, which shows how well the model performed .
     plt.scatter(y_test, y_pred, color='purple')
     plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'k--', lw=2)
@@ -156,26 +186,32 @@ def multiple_lin_reg_plot(y_test, y_pred):
     plt.show()
 
 def multiple_lin_reg_plot3d(X, Y, model):
-    # Creates 3d plotting environment
+    
+# Creates 3d plotting environment
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    # Sets X1 variable and X2 variable as 1st and 2nd column for plotting
+    
+# Sets X1 variable and X2 variable as 1st and 2nd column for plotting
     x1 = X[:, 0]
     x2 = X[:, 1]
-    # plots X1 Vs X2 vs Y
+    
+# plots X1 Vs X2 vs Y
     ax.scatter(x1, x2, Y, color='blue', label='Actual Data')
-    # Creates a "surface" so that every possible combination of x1 and x2 is
+    
+# Creates a "surface" so that every possible combination of x1 and x2 is
     # covered for corresponding Y predictions
     x1_grid, x2_grid = np.meshgrid(
         np.linspace(x1.min(), x1.max(), 20),
         np.linspace(x2.min(), x2.max(), 20)
     )
-    # Flattens X1 and X2 (currently 2d) into 1d arrays that are paired up column-wise
+    
+# Flattens X1 and X2 (currently 2d) into 1d arrays that are paired up column-wise
     # in order to predict Y variables, then reshapes the 1d array of Y variables into
     # a 2d plane.
     x_grid_flat = np.c_[x1_grid.ravel(), x2_grid.ravel()]
     y_pred_grid = model.predict(x_grid_flat).reshape(x1_grid.shape)
-    # Plots predicted Y values over the X1,X2 grid axis with a semi-transparent red plane
+    
+# Plots predicted Y values over the X1,X2 grid axis with a semi-transparent red plane
     ax.plot_surface(x1_grid, x2_grid, y_pred_grid, alpha=0.5, color='red')
     ax.set_xlabel("X1")
     ax.set_ylabel("X2")
@@ -184,25 +220,30 @@ def multiple_lin_reg_plot3d(X, Y, model):
     plt.show()
 
 def manual_prediction(coefficients, intercept):
-    # Makes sure regression has been completed before manual predictions are calculated
+    
+# Makes sure regression has been completed before manual predictions are calculated
     if coefficients is None or intercept is None:
         print("Model coefficients are not available. Please run linear regression first.")
         return
-    # Tells user how many X variable inputs are expected
+    
+# Tells user how many X variable inputs are expected
     m = len(coefficients)
     print(f"Model expects {m} input feature(s).")
 
     try:
         input_features = []
         for i in range(m):
-            # Takes user input for X# Variable and appends to input_features list above
+            
+# Takes user input for X# Variable and appends to input_features list above
             val = float(input(f"Enter value for X{i + 1}: "))
             input_features.append(val)
-        # creates a numpy array with the users inputted X variables and completes the
+        
+# creates a numpy array with the users inputted X variables and completes the
         # calculations based on the regression formula B0 + B1x + ...
         input_array = np.array(input_features)
         prediction = np.dot(input_array, coefficients) + intercept
-        # Prints predicted Y value and handles errors with exception block
+        
+# Prints predicted Y value and handles errors with exception block
         print(f"Predicted Y value: {prediction:}")
     except Exception as e:
         print(f"Error during manual prediction: {e}")
