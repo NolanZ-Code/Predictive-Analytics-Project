@@ -175,7 +175,7 @@ def multiple_lin_reg_plot3d(X, Y, model):
     # a 2d plane.
     x_grid_flat = np.c_[x1_grid.ravel(), x2_grid.ravel()]
     y_pred_grid = model.predict(x_grid_flat).reshape(x1_grid.shape)
-
+    # Plots predicted Y values over the X1,X2 grid axis with a semi-transparent red plane
     ax.plot_surface(x1_grid, x2_grid, y_pred_grid, alpha=0.5, color='red')
     ax.set_xlabel("X1")
     ax.set_ylabel("X2")
@@ -184,22 +184,26 @@ def multiple_lin_reg_plot3d(X, Y, model):
     plt.show()
 
 def manual_prediction(coefficients, intercept):
+    # Makes sure regression has been completed before manual predictions are calculated
     if coefficients is None or intercept is None:
         print("Model coefficients are not available. Please run linear regression first.")
         return
-
+    # Tells user how many X variable inputs are expected
     m = len(coefficients)
     print(f"Model expects {m} input feature(s).")
 
     try:
         input_features = []
         for i in range(m):
+            # Takes user input for X# Variable and appends to input_features list above
             val = float(input(f"Enter value for X{i + 1}: "))
             input_features.append(val)
-
+        # creates a numpy array with the users inputted X variables and completes the
+        # calculations based on the regression formula B0 + B1x + ...
         input_array = np.array(input_features)
         prediction = np.dot(input_array, coefficients) + intercept
-        print(f"Predicted Y value: {prediction:.4f}")
+        # Prints predicted Y value and handles errors with exception block
+        print(f"Predicted Y value: {prediction:}")
     except Exception as e:
         print(f"Error during manual prediction: {e}")
 
