@@ -7,6 +7,8 @@ from sklearn.metrics import mean_squared_error, r2_score
 from mpl_toolkits.mplot3d import Axes3D
 
 X, Y = None, None
+coefficients, intercept = None, None
+
 def user_file_import():
     global X, Y
     file_path = input("Enter the file path: ")
@@ -39,7 +41,6 @@ def user_list_input():
     m = int(input("How many X variables (columns/features)?: "))
     n = int(input("How many data points (rows)?: "))
 
-
     for i in range(1, n + 1):
         print(f"Enter values for data point #{i}:")
         x_row = []
@@ -53,9 +54,10 @@ def user_list_input():
 
     X = np.array(X_rows)
     Y = np.array(Y)
+
 def scatterplot():
     try:
-        plt.scatter(X,Y)
+        plt.scatter(X, Y)
         plt.xlabel("X-axis")
         plt.ylabel("Y-axis")
         plt.title("Scatter Plot")
@@ -85,12 +87,14 @@ def multiple_linear_regression_predict(X, Y):
     print(f"Intercept: {model.intercept_}")
 
     if X.shape[1] == 1:
-        if X.shape[1] == 1:
-            simple_lin_reg_plot(X_test, y_test, y_pred, model)
+        simple_lin_reg_plot(X_test, y_test, y_pred, model)
     elif X.shape[1] == 2:
         multiple_lin_reg_plot3d(X, Y, model)
     else:
         multiple_lin_reg_plot(y_test, y_pred)
+
+    return model.coef_, model.intercept_
+
 def simple_lin_reg_plot(X_test, y_test, y_pred, model):
     sorted_indices = X_test[:, 0].argsort()
     X_sorted = X_test[sorted_indices]
@@ -104,6 +108,7 @@ def simple_lin_reg_plot(X_test, y_test, y_pred, model):
     plt.legend()
     plt.grid(True)
     plt.show()
+
 def multiple_lin_reg_plot(y_test, y_pred):
     plt.scatter(y_test, y_pred, color='purple')
     plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'k--', lw=2)
@@ -112,6 +117,7 @@ def multiple_lin_reg_plot(y_test, y_pred):
     plt.title("Predicted vs. Actual")
     plt.grid(True)
     plt.show()
+
 def multiple_lin_reg_plot3d(X, Y, model):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
@@ -135,12 +141,32 @@ def multiple_lin_reg_plot3d(X, Y, model):
     ax.set_title("3D Linear Regression")
     plt.show()
 
+def manual_prediction(coefficients, intercept):
+    if coefficients is None or intercept is None:
+        print("Model coefficients are not available. Please run linear regression first.")
+        return
+
+    m = len(coefficients)
+    print(f"Model expects {m} input feature(s).")
+
+    try:
+        input_features = []
+        for i in range(m):
+            val = float(input(f"Enter value for X{i + 1}: "))
+            input_features.append(val)
+
+        input_array = np.array(input_features)
+        prediction = np.dot(input_array, coefficients) + intercept
+        print(f"Predicted Y value: {prediction:.4f}")
+    except Exception as e:
+        print(f"Error during manual prediction: {e}")
+
 while True:
     print("Which action would you like to complete?")
     try:
         datatype = int(input("""
         File import (1), List Input (2), Scatterplot (3), 
-        Lin_Reg (4), Exit (6): """))
+        Lin_Reg (4), Manual Prediction (5), Exit (6): """))
     except:
         print("Input not recognized")
         continue
@@ -152,13 +178,15 @@ while True:
     elif datatype == 6:
         print("Exiting program.")
         quit()
-    elif datatype in [3, 4]:
+    elif datatype in [3, 4, 5]:
         if X is None or Y is None:
             print("No data currently loaded. Please import data first.")
             continue
         if datatype == 3:
             scatterplot()
         elif datatype == 4:
-            multiple_linear_regression_predict(X, Y)
+            coefficients, intercept = multiple_linear_regression_predict(X, Y)
+        elif datatype == 5:
+            manual_prediction(coefficients, intercept)
     else:
         print("Invalid input")
