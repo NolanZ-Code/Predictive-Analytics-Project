@@ -104,18 +104,28 @@ def multiple_linear_regression_predict(X, Y):
     r2 = r2_score(y_test, y_pred)
     print(f"Mean Squared Error: {mse}")
     print(f"R-squared: {r2}")
-
+    # If there are multiple X variables, each coefficient is printed based off
+    # of the regression formula
     if X.shape[1] > 1:
         for i, coef in enumerate(model.coef_):
             print(f"Coefficient for feature {i + 1}: {coef}")
     else:
         print(f"Coefficient: {model.coef_[0]}")
+    # the intercept is printed, or what the predictors are unable to predict
     print(f"Intercept: {model.intercept_}")
-
+    # If there is only 1 X variable, it is sent to the simple lin reg plot
+    # that plots X and Y with a regression line
     if X.shape[1] == 1:
         simple_lin_reg_plot(X_test, y_test, y_pred, model)
+    # If there is 2 X variables, it is sent to the 3d multiple lin reg plot
+    # that plots X1, X2, and Y with a regression plane
     elif X.shape[1] == 2:
         multiple_lin_reg_plot3d(X, Y, model)
+    # If there is 3 or more X variables, plotting on a 3d graph is impossible/quite
+    # difficult as you would need to reduce the dimensions of your X variables, which
+    # would not allow you to visualize each X variable separately so this plots predicted vs 
+    # actual data with a line closer to x=y showing that the model is able to predict the data
+    # with less 
     else:
         multiple_lin_reg_plot(y_test, y_pred)
 
