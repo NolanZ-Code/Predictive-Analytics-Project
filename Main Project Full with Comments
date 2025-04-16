@@ -121,11 +121,9 @@ def multiple_linear_regression_predict(X, Y):
     # that plots X1, X2, and Y with a regression plane
     elif X.shape[1] == 2:
         multiple_lin_reg_plot3d(X, Y, model)
-    # If there is 3 or more X variables, plotting on a 3d graph is impossible/quite
-    # difficult as you would need to reduce the dimensions of your X variables, which
-    # would not allow you to visualize each X variable separately so this plots predicted vs 
-    # actual data with a line closer to x=y showing that the model is able to predict the data
-    # with less 
+    # If there is 3 or more X variables, plotting on a 3d graph is somewhat impractical
+    # as interpreting each X variable individually would become difficult so this plots 
+    # predicted vs actual data which shows a visual representation on how well the model performs
     else:
         multiple_lin_reg_plot(y_test, y_pred)
 
