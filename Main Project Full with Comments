@@ -87,7 +87,11 @@ def multiple_linear_regression_predict(X, Y):
 # because that is the format in which SciKit expects the data
     if X.ndim == 1:
         X = X.reshape(-1, 1)
-
+    # Creating variables in order to train and test the data
+    # Test size uses 50% of data to test, 50% to train. A lower test size is 
+    # more accurate when predicting data however in order to show a better data
+    # representation a higher test size is advisable in order to prevent data from
+    # being unable to be shown on plots later on.
     X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.5, random_state=42)
     model = LinearRegression()
     model.fit(X_train, y_train)
