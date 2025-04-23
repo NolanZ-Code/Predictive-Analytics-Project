@@ -1,0 +1,17 @@
+def user_list_input():
+    global X, Y
+    X_rows = []
+    Y = []
+    m = int(input("How many X variables (columns not including Y)?: "))
+    n = int(input("How many data points (rows)?: "))
+    for i in range(1, n + 1):
+        print(f"Enter values for data point #{i}:")
+        x_row = []
+        for j in range(1, m + 1):
+            x_val = float(input(f"  X{j}: "))
+            x_row.append(x_val)
+        X_rows.append(x_row)
+        y_val = float(input("  Y: "))
+        Y.append(y_val)
+    X = np.array(X_rows)
+    Y = np.array(Y)
