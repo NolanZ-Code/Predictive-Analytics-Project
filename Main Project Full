@@ -185,12 +185,3 @@ while True:
             manual_prediction(coefficients, intercept)
     else:
         print("Invalid input")
-
-# Simple:
-# /Users/devinreimer/Downloads/SimpleLinearRegression.csv
-# Multiple 3d:
-# /Users/devinreimer/Downloads/multiple_linear_regression_dataset.csv
-# Multiple:
-# /Users/devinreimer/Downloads/Student_Performance.csv
-# Multiple with specified user x
-# /Users/devinreimer/Downloads/company.csv
