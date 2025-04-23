@@ -1,0 +1,31 @@
+while True:
+    print("Which action would you like to complete?")
+    try:
+        datatype = int(input("""
+        File import (1), List Input (2), Scatterplot (3), 
+        Lin_Reg (4), Manual Prediction (5), Exit (6): """))
+    except:
+        print("Input not recognized")
+        continue
+
+    if datatype == 1:
+        result = user_file_import()
+        if result is not None:
+            feature_names = result
+    elif datatype == 2:
+        user_list_input()
+    elif datatype == 6:
+        print("Exiting program.")
+        quit()
+    elif datatype in [3, 4, 5]:
+        if X is None or Y is None:
+            print("No data currently loaded. Please import data first.")
+            continue
+        if datatype == 3:
+            scatterplot()
+        elif datatype == 4:
+            coefficients, intercept = multiple_linear_regression_predict(X, Y, feature_names)
+        elif datatype == 5:
+            manual_prediction(coefficients, intercept)
+    else:
+        print("Invalid input")
