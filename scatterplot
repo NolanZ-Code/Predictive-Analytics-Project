@@ -1,8 +1,8 @@
-fig, ax = plt.subplots()
-
-ax.scatter(X, Y, s=sizes, c=colors, vmin=0, vmax=100)
-
-ax.set(xlim=(0, 8), xticks=np.arange(1, 8),
-       ylim=(0, 8), yticks=np.arange(1, 8))
-
-plt.show()
+ try:
+        plt.scatter(X, Y)
+        plt.xlabel("X-axis")
+        plt.ylabel("Y-axis")
+        plt.title("Scatter Plot")
+        plt.show()
+    except:
+        print("There was an error, most likely have too many x variables.")
