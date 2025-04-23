@@ -1,0 +1,17 @@
+def manual_prediction(coefficients, intercept):
+    if coefficients is None or intercept is None:
+        print("Model coefficients are not available. Please run linear regression first.")
+        return
+    m = len(coefficients)
+    print(f"Model expects {m} input feature(s).")
+
+    try:
+        input_features = []
+        for i in range(m):
+            val = float(input(f"Enter value for X{i + 1}: "))
+            input_features.append(val)
+        input_array = np.array(input_features)
+        prediction = np.dot(input_array, coefficients) + intercept
+        print(f"Predicted Y value: {prediction:}")
+    except Exception as e:
+        print(f"Error during manual prediction: {e}")
